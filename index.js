@@ -28,32 +28,37 @@ const jwtmiddleware=(req,res,next)=>{
 
 //register-post
 app.post("/register", (req, res) => {
-    const result = ds.register(req.body.uname, req.body.accno, req.body.psw)
-    res.status(result.statusCode).json(result)
+    ds.register(req.body.uname, req.body.accno, req.body.psw).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
 //login-post
 app.post("/login", (req, res) => {
-    const result = ds.login(req.body.accno, req.body.psw)
-    res.status(result.statusCode).json(result)
+    ds.login(req.body.accno, req.body.psw).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
 //deposit-post
 app.post("/deposit", jwtmiddleware,(req, res) => {
-    const result = ds.deposit(req.body.accno, req.body.psw, req.body.amount)
-    res.status(result.statusCode).json(result)
+    ds.deposit(req.body.accno, req.body.psw, req.body.amount).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
 //withdraw-post
 app.post("/withdraw", jwtmiddleware, (req, res) => {
-    const result = ds.withdraw(req.body.accno, req.body.psw, req.body.amount)
-    res.status(result.statusCode).json(result)
+    ds.withdraw(req.body.accno, req.body.psw, req.body.amount).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
 //getTransaction-get
 app.get("/transaction", jwtmiddleware, (req, res) => {
-    const result = ds.getTransaction(req.body.accno)
-    res.status(result.statusCode).json(result)
+    ds.getTransaction(req.body.accno).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
 })
 
 
