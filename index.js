@@ -1,10 +1,29 @@
-const express = require("express")   // import express and store in avariable
+const express = require("express") 
 
-const ds = require('./service/dataService')   //import file
+const ds = require('./service/dataService')  
 
-const app = express()    // app creation
+const jwt= require("jsonwebtoken")  //importing jwt
 
-app.use(express.json())  //convert json to js
+const app = express()  
+
+app.use(express.json())  
+
+//middleware creation
+const jwtmiddleware=(req,res,next)=>{
+    try{
+        const token=req.headers['access_token'] //access token from request body
+        const data=jwt.verify(token,"superkey123")    //verifying token with secretkey and stored to data 
+        console.log(data);
+        next()
+    }
+    catch{
+        res.status(422).json({
+            status: false,
+            message: "please login",
+            statusCode: 404
+        })
+    }
+}
 
 
 //register-post
@@ -20,19 +39,19 @@ app.post("/login", (req, res) => {
 })
 
 //deposit-post
-app.post("/deposit", (req, res) => {
+app.post("/deposit", jwtmiddleware,(req, res) => {
     const result = ds.deposit(req.body.accno, req.body.psw, req.body.amount)
     res.status(result.statusCode).json(result)
 })
 
 //withdraw-post
-app.post("/withdraw", (req, res) => {
+app.post("/withdraw", jwtmiddleware, (req, res) => {
     const result = ds.withdraw(req.body.accno, req.body.psw, req.body.amount)
     res.status(result.statusCode).json(result)
 })
 
 //getTransaction-get
-app.get("/transaction", (req, res) => {
+app.get("/transaction", jwtmiddleware, (req, res) => {
     const result = ds.getTransaction(req.body.accno)
     res.status(result.statusCode).json(result)
 })

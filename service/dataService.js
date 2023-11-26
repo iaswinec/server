@@ -1,3 +1,4 @@
+const jwt=require("jsonwebtoken")   //import
 userDetails = {
     1000: { username: "anu", acno: 1000, password: "1234", balance: 0, transaction: [] },
     1001: { username: "amal", acno: 1001, password: "1234", balance: 0, transaction: [] },
@@ -28,12 +29,16 @@ login = (acno, psw) => {
         if (psw == userDetails[acno]["password"]) {
             currentUser = userDetails[acno]["username"]
             currentAcno = acno
+
+            //token generation
+            const token=jwt.sign({acno},"superkey123")
             return {
                 status: true,
                 message: "login success",
                 statusCode: 200,
                 currentUser,
-                currentAcno
+                currentAcno,
+                token
             }
         }
         else {
