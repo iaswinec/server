@@ -1,18 +1,21 @@
 const express = require("express") 
 
+const cors= require("cors") //
+
 const ds = require('./service/dataService')  
 
-const jwt= require("jsonwebtoken")  //importing jwt
+const jwt= require("jsonwebtoken")  
 
 const app = express()  
 
+app.use(cors({origin:'http://localhost:4200'})) //integrate app with front end
+
 app.use(express.json())  
 
-//middleware creation
 const jwtmiddleware=(req,res,next)=>{
     try{
-        const token=req.headers['access_token'] //access token from request body
-        const data=jwt.verify(token,"superkey123")    //verifying token with secretkey and stored to data 
+        const token=req.headers['access_token']
+        const data=jwt.verify(token,"superkey123")    
         console.log(data);
         next()
     }
@@ -35,32 +38,38 @@ app.post("/register", (req, res) => {
 
 //login-post
 app.post("/login", (req, res) => {
-    ds.login(req.body.accno, req.body.psw).then(result=>{
+    ds.login(req.body.acno, req.body.psw).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
 
 //deposit-post
 app.post("/deposit", jwtmiddleware,(req, res) => {
-    ds.deposit(req.body.accno, req.body.psw, req.body.amount).then(result=>{
+    ds.deposit(req.body.acno, req.body.password, req.body.amount).then(result=>{        //accno,psw,amount
         res.status(result.statusCode).json(result)
     })
 })
 
 //withdraw-post
 app.post("/withdraw", jwtmiddleware, (req, res) => {
-    ds.withdraw(req.body.accno, req.body.psw, req.body.amount).then(result=>{
+    ds.withdraw(req.body.acno, req.body.password, req.body.amount).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
 
-//getTransaction-get
-app.get("/transaction", jwtmiddleware, (req, res) => {
-    ds.getTransaction(req.body.accno).then(result=>{
+//getTransaction-post(this was 'get' while using localstorage)
+app.post("/transaction", jwtmiddleware, (req, res) => {
+    ds.getTransaction(req.body.acno).then(result=>{
         res.status(result.statusCode).json(result)
     })
 })
 
+//delete
+app.delete("/delete/:acno", jwtmiddleware, (req,res)=>{
+    ds.deleteAcc(req.params.acno).then(result=>{
+        res.status(result.statusCode).json(result)
+    })
+})
 
 //resolve api
 // app.get("/",(req,res)=>{

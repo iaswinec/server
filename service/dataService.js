@@ -1,11 +1,5 @@
 const jwt=require("jsonwebtoken")   //import
 const db=require('./db')
-userDetails = {
-    1000: { username: "anu", acno: 1000, password: "1234", balance: 0, transaction: [] },
-    1001: { username: "amal", acno: 1001, password: "1234", balance: 0, transaction: [] },
-    1002: { username: "arun", acno: 1002, password: "1234", balance: 0, transaction: [] },
-    1003: { username: "megha", acno: 1003, password: "1234", balance: 0, transaction: [] }
-}
 
 register = (uname, accno, psw) => {
     return db.User.findOne({acno:accno}).then(user=>{  //store the resolved o/p of findOne in a variable user
@@ -118,7 +112,7 @@ getTransaction=(accno)=>{
     return db.User.findOne({acno:accno}).then(user=>{
         if(user){
             return {
-                ststus: true,
+                status: true,
                 transaction: user.transaction,
                 statusCode: 200
             }
@@ -126,7 +120,26 @@ getTransaction=(accno)=>{
 })
 }
 
+deleteAcc=(acno)=>{
+    return db.User.deleteOne({"acno":acno}).then(user=>{
+        if(user){
+            return {
+                status: true,
+                message:`accoount deleted successfully`,
+                statusCode: 200
+            }
+        }
+        else{
+            return {
+                status: false,
+                message:`you can't delete right now`,
+                statusCode: 402
+            }
+        }
+    })
+}
+
 
 module.exports = {
-    register, login, deposit, withdraw, getTransaction
+    register, login, deposit, withdraw, getTransaction, deleteAcc
 }
